@@ -1,53 +1,45 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import numpy as np
-from utils.preprocess import clean_text
-from flask_cors import CORS
+from preprocess import clean_text   # your preprocessing function
 
 app = Flask(__name__)
-CORS(app)   # 👈 important: allows frontend to call backend
 
 # Load model + vectorizer
-MODEL_PATH = "model/fake_job_model.pkl"
-VECTORIZER_PATH = "model/tfidf_vectorizer.pkl"
+model = joblib.load("fake_job_model.pkl")
+vectorizer = joblib.load("tfidf_vectorizer.pkl")
 
-model = joblib.load(MODEL_PATH)
-vectorizer = joblib.load(VECTORIZER_PATH)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    try:
-        data = request.get_json()
 
-        description = data.get("description", "")
-        if not description:
-            return jsonify({"error": "Description is required"}), 400
+    # Get values from form
+    title = request.form.get("title", "")
+    company = request.form.get("company", "")
+    description = request.form.get("description", "")
+    requirements = request.form.get("requirements", "")
 
-        # clean text
-        cleaned_text = clean_text(description)
+    # Combine all text
+    full_text = f"{title} {company} {description} {requirements}"
 
-        # vectorize
-        vector_input = vectorizer.transform([cleaned_text])
+    # Clean text using your preprocess.py
+    cleaned = clean_text(full_text)
 
-        # prediction
-        prediction = model.predict(vector_input)[0]
-        probability = model.predict_proba(vector_input)[0][1]
+    # Vectorize
+    transformed = vectorizer.transform([cleaned])
 
-        return jsonify({
-            "prediction": int(prediction),
-            "probability": float(probability),
-            "label": "fake" if prediction == 1 else "real"
-        })
+    # Predict
+    prediction = model.predict(transformed)[0]   # 0 = real, 1 = fake
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    result = "Fake Job" if prediction == 1 else "Real Job"
 
-
-@app.route("/", methods=["GET"])
-def home():
-    return {"message": "Fake Job Detector API working"}
-
+    return render_template("result.html", result=result)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
