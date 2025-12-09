@@ -1,0 +1,9 @@
+import pandas as pd
+
+df = pd.read_csv("fake_job_postings.csv")  # put your file name here
+
+small_df = df.sample(n=2000, random_state=42)
+
+small_df.to_csv("dataset_2000.csv", index=False)
+
+print("Done! Selected rows:", len(small_df))

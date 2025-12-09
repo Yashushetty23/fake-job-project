@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Enter Job Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="job">
+
+  <div class="container input-box">
+
+    <h2>Job Details Form</h2>
+
+    <input id="title" class="input" placeholder="Job Title">
+    <input id="company" class="input" placeholder="Company Name">
+    <input id="location" class="input" placeholder="Location">
+    <input id="salary" class="input" placeholder="Salary (optional)">
+    <textarea id="description" class="textarea" placeholder="Job Description"></textarea>
+
+    <button class="btn-primary" onclick="checkJob()">Check Job</button>
+    <button class="btn-secondary" onclick="location.reload()">Clear</button>
+
+    <p id="error" class="error"></p>
+
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
