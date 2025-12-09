@@ -1,25 +1,47 @@
 import re
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+try:
+    import nltk
+    from nltk.corpus import stopwords
+    from nltk.stem import WordNetLemmatizer
+    nltk_available = True
+except Exception:
+    nltk_available = False
 
-# download necessary nltk data
-nltk.download("stopwords", quiet=True)
-nltk.download("wordnet", quiet=True)
-nltk.download("omw-1.4", quiet=True)
+if nltk_available:
+    try:
+        stopwords.words("english")
+    except Exception:
+        nltk.download("punkt", quiet=True)
+        nltk.download("wordnet", quiet=True)
+        nltk.download("omw-1.4", quiet=True)
+        nltk.download("stopwords", quiet=True)
 
-stop_words = set(stopwords.words("english"))
-lemmatizer = WordNetLemmatizer()
-
-
-def clean_text(text):
+def simple_clean(text: str) -> str:
+    if not isinstance(text, str):
+        text = str(text)
     text = text.lower()
-    text = re.sub(r'[^a-zA-Z ]', ' ', text)
-    words = text.split()
+    # remove html tags
+    text = re.sub(r"<[^>]+>", " ", text)
+    # remove urls
+    text = re.sub(r"http\S+|www\.\S+", " ", text)
+    # replace separators we used with space
+    text = text.replace("|||", " ")
+    # remove punctuation and numbers except keep basic letters and spaces
+    text = re.sub(r"[^a-z\s]", " ", text)
+    # collapse whitespace
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
-    cleaned = []
-    for w in words:
-        if w not in stop_words:
-            cleaned.append(lemmatizer.lemmatize(w))
-
-    return " ".join(cleaned)
+def clean_text(text: str) -> str:
+    txt = simple_clean(text)
+    if nltk_available:
+        stops = set(stopwords.words("english"))
+        tokens = txt.split()
+        tokens = [t for t in tokens if t not in stops and len(t) > 1]
+        lemmatizer = WordNetLemmatizer()
+        tokens = [lemmatizer.lemmatize(t) for t in tokens]
+        return " ".join(tokens)
+    else:
+        small_stops = {"the","and","is","in","to","for","of","a","an","on","with","we","you","this"}
+        tokens = [t for t in txt.split() if t not in small_stops and len(t) > 1]
+        return " ".join(tokens)
