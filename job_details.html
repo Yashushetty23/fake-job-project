@@ -1,28 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-  <title>Enter Job Details</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <title>Submit Job Details</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="job">
+<body>
+  <div style="max-width:900px;margin:30px auto;font-family:Arial, sans-serif">
+    <h2>Enter Job Details (Option B)</h2>
 
-  <div class="container input-box">
+    <form action="/predict" method="post">
+      <label>Job Title</label><br>
+      <input type="text" name="title" placeholder="Job title" style="width:100%" required><br><br>
 
-    <h2>Job Details Form</h2>
+      <label>Company</label><br>
+      <input type="text" name="company" placeholder="Company name" style="width:100%"><br><br>
 
-    <input id="title" class="input" placeholder="Job Title">
-    <input id="company" class="input" placeholder="Company Name">
-    <input id="location" class="input" placeholder="Location">
-    <input id="salary" class="input" placeholder="Salary (optional)">
-    <textarea id="description" class="textarea" placeholder="Job Description"></textarea>
+      <label>Location</label><br>
+      <input type="text" name="location" placeholder="Location" style="width:100%"><br><br>
 
-    <button class="btn-primary" onclick="checkJob()">Check Job</button>
-    <button class="btn-secondary" onclick="location.reload()">Clear</button>
+      <label>Salary</label><br>
+      <input type="text" name="salary" placeholder="Salary or compensation" style="width:100%"><br><br>
 
-    <p id="error" class="error"></p>
+      <label>Job Description</label><br>
+      <textarea name="description" rows="8" cols="80" placeholder="Full job description" style="width:100%"></textarea><br><br>
 
+      <label>Requirements</label><br>
+      <textarea name="requirements" rows="4" cols="80" placeholder="Skills/requirements" style="width:100%"></textarea><br><br>
+
+      <button type="submit" style="padding:10px 18px">Predict</button>
+    </form>
+
+    <p style="margin-top:16px"><a href="/">Back</a></p>
   </div>
-
-<script src="script.js"></script>
 </body>
 </html>
